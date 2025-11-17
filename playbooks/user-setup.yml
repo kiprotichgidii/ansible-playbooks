@@ -1,0 +1,6 @@
+- name: Create shockwave user and setup SSH access
+  hosts: all
+  become: true
+
+  roles:
+    - create-users
