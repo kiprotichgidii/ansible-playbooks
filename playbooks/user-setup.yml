@@ -1,4 +1,4 @@
-- name: Create shockwave user and setup SSH access
+- name: Create provisioning user and setup SSH access
   hosts: all
   become: true
 

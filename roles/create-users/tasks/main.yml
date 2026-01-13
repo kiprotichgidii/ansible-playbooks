@@ -1,37 +1,24 @@
-- name: Ensure shockwave user exists
+- name: Ensure target user exists
   ansible.builtin.user:
-    name: shockwave
+    name: "{{ user_name | default('shockwave') }}"
     state: present
     create_home: yes
     shell: /bin/bash
     groups: wheel
     append: yes
 
-- name: Setup Passwordless sudo for shockwave user
+- name: Setup Passwordless sudo for target user
   ansible.builtin.copy:
-    dest: /etc/sudoers.d/shockwave
-    content: "shockwave ALL=(ALL) NOPASSWD: ALL\n"
+    dest: "/etc/sudoers.d/{{ user_name | default('shockwave') }}"
+    content: "{{ user_name | default('shockwave') }} ALL=(ALL) NOPASSWD: ALL\n"
     owner: root
     group: root
     mode: '0440'
     validate: '/usr/sbin/visudo -cf %s'
 
-- name: Create .ssh directory for shockwave user
-  ansible.builtin.file:
-    path: /home/shockwave/.ssh
-    state: directory
-    owner: shockwave
-    group: shockwave
-    mode: '0700'
-
-- name: Add authorized keys for shockwave user
-  ansible.builtin.copy:
-    dest: /home/shockwave/.ssh/authorized_keys
-    content: |
-      {% for key in ssh_public_keys %}
-      {{ key }}
-      {% endfor %}
-    owner: shockwave
-    group: shockwave
-    mode: '0600'
+- name: Add authorized keys for target user
+  ansible.posix.authorized_key:
+    user: "{{ user_name | default('shockwave') }}"
+    state: present
+    key: "{{ item }}"
   loop: "{{ ssh_public_keys }}"
