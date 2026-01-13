@@ -1,0 +1,29 @@
+---
+- name: Install MySQL Server
+  ansible.builtin.package:
+    name: "{{ mysql_package }}"
+    state: present
+
+- name: Ensure MySQL service is running and enabled
+  ansible.builtin.service:
+    name: "{{ mysql_service }}"
+    state: started
+    enabled: yes
+
+- name: Configure bind address (Debian/Ubuntu)
+  ansible.builtin.lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: "bind-address = {{ mysql_bind_address }}"
+    backup: yes
+  notify: Restart MySQL
+  when: ansible_os_family == "Debian"
+
+- name: Configure bind address (RedHat)
+  ansible.builtin.lineinfile:
+    path: /etc/my.cnf.d/mysql-server.cnf
+    regexp: '^bind-address'
+    line: "bind-address = {{ mysql_bind_address }}"
+    backup: yes
+  notify: Restart MySQL
+  when: ansible_os_family == "RedHat"

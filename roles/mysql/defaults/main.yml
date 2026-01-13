@@ -1,0 +1,5 @@
+---
+mysql_package: mysql-server
+mysql_service: mysql
+mysql_bind_address: "127.0.0.1"
+mysql_port: 3306
