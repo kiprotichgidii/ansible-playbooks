@@ -1,0 +1,11 @@
+---
+apache_listen_port: 80
+apache_vhosts: []
+#  - name: example.com
+#    servername: example.com
+#    serveralias: www.example.com
+#    documentroot: /var/www/html/example
+#    extra_parameters: |
+#      <Directory /var/www/html/example>
+#        AllowOverride All
+#      </Directory>
