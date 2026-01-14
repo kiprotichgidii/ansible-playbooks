@@ -1,0 +1,26 @@
+# MacOS
+.DS_Store
+
+# Ansible
+*.retry
+*.log
+ansible-installer-*
+.ansible/
+collections/
+
+# Python / VirtualEnv
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# IDEs
+.vscode/
+.idea/
+
+# Secrets (Caution: Vault encrypted files SHOULD be committed, but password files should NOT)
+.vault_pass
+vault_pass.txt
+*.key
+*.pem
+id_rsa
