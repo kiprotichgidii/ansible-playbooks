@@ -1,0 +1,11 @@
+server {
+    listen {{ item.listen | default('80') }};
+    server_name {{ item.server_name }};
+    root {{ item.root | default('/var/www/html') }};
+    index {{ item.index | default('index.html index.htm') }};
+
+    access_log /var/log/nginx/{{ item.name }}_access.log;
+    error_log /var/log/nginx/{{ item.name }}_error.log;
+
+    {{ item.extra_parameters | default('') }}
+}
