@@ -1,0 +1,33 @@
+---
+- name: Load OS-specific variables
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install Apache
+  ansible.builtin.package:
+    name: "{{ apache_package }}"
+    state: present
+
+- name: Ensure Apache service is running
+  ansible.builtin.service:
+    name: "{{ apache_service }}"
+    state: started
+    enabled: yes
+
+- name: Configure Virtual Hosts
+  ansible.builtin.template:
+    src: vhost.conf.j2
+    dest: "{{ apache_vhosts_dir }}/{{ item.name }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ apache_vhosts }}"
+  notify: Reload Apache
+
+- name: Enable Virtual Hosts (Debian/Ubuntu)
+  ansible.builtin.file:
+    src: "{{ apache_vhosts_dir }}/{{ item.name }}.conf"
+    dest: "{{ apache_vhosts_enabled_dir }}/{{ item.name }}.conf"
+    state: link
+  loop: "{{ apache_vhosts }}"
+  when: ansible_os_family == "Debian"
+  notify: Reload Apache
