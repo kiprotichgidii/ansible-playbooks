@@ -1,0 +1,127 @@
+---
+# SSH Hardening
+- name: Configure SSH Hardening
+  ansible.builtin.template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0600'
+    validate: '/usr/sbin/sshd -t -f %s'
+    backup: yes
+  notify: Restart SSH
+
+# Kernel Hardening
+- name: Apply sysctl hardening
+  ansible.builtin.template:
+    src: 99-hardening.conf.j2
+    dest: /etc/sysctl.d/99-hardening.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload sysctl
+
+# Firewall (UFW)
+- name: Install UFW
+  ansible.builtin.package:
+    name: ufw
+    state: present
+  when: hardening_enable_ufw
+
+- name: Set UFW default incoming policy
+  community.general.ufw:
+    direction: incoming
+    policy: "{{ hardening_ufw_default_incoming }}"
+  when: hardening_enable_ufw
+
+- name: Set UFW default outgoing policy
+  community.general.ufw:
+    direction: outgoing
+    policy: "{{ hardening_ufw_default_outgoing }}"
+  when: hardening_enable_ufw
+
+- name: Allow specified ports through UFW
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.split('/')[0] }}"
+    proto: "{{ item.split('/')[1] }}"
+  loop: "{{ hardening_ufw_allowed_ports }}"
+  when: hardening_enable_ufw
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+  when: hardening_enable_ufw
+
+# Fail2ban
+- name: Install fail2ban
+  ansible.builtin.package:
+    name: fail2ban
+    state: present
+  when: hardening_enable_fail2ban
+
+- name: Configure fail2ban
+  ansible.builtin.template:
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: '0644'
+  when: hardening_enable_fail2ban
+  notify: Restart fail2ban
+
+- name: Ensure fail2ban is running
+  ansible.builtin.service:
+    name: fail2ban
+    state: started
+    enabled: yes
+  when: hardening_enable_fail2ban
+
+# Automatic Updates (Debian/Ubuntu)
+- name: Install unattended-upgrades (Debian/Ubuntu)
+  ansible.builtin.package:
+    name: unattended-upgrades
+    state: present
+  when: 
+    - hardening_enable_auto_updates
+    - ansible_os_family == "Debian"
+
+- name: Enable automatic updates (Debian/Ubuntu)
+  ansible.builtin.debconf:
+    name: unattended-upgrades
+    question: unattended-upgrades/enable_auto_updates
+    value: 'true'
+    vtype: boolean
+  when: 
+    - hardening_enable_auto_updates
+    - ansible_os_family == "Debian"
+
+# Automatic Updates (RedHat)
+- name: Install yum-cron (RedHat)
+  ansible.builtin.package:
+    name: yum-cron
+    state: present
+  when: 
+    - hardening_enable_auto_updates
+    - ansible_os_family == "RedHat"
+
+- name: Enable yum-cron (RedHat)
+  ansible.builtin.service:
+    name: yum-cron
+    state: started
+    enabled: yes
+  when: 
+    - hardening_enable_auto_updates
+    - ansible_os_family == "RedHat"
+
+# Disable unnecessary services
+- name: Disable unnecessary services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: no
+  loop:
+    - avahi-daemon
+    - cups
+  failed_when: false
+  ignore_errors: yes
