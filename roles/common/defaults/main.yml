@@ -1,0 +1,46 @@
+---
+# Essential packages to install on all systems
+common_packages:
+  - vim
+  - curl
+  - wget
+  - git
+  - htop
+  - net-tools
+  - rsync
+  - tmux
+  - tree
+  - unzip
+  - zip
+
+# Timezone configuration
+common_timezone: "UTC"
+
+# Hostname configuration
+common_set_hostname: false
+common_hostname: ""
+
+# NTP/Time synchronization
+common_enable_ntp: true
+common_ntp_servers:
+  - 0.pool.ntp.org
+  - 1.pool.ntp.org
+  - 2.pool.ntp.org
+
+# Locale settings
+common_locale: "en_US.UTF-8"
+
+# MOTD (Message of the Day)
+common_enable_motd: true
+common_motd_banner: |
+  ╔═══════════════════════════════════════════════════════════╗
+  ║                                                           ║
+  ║   Unauthorized access to this system is prohibited       ║
+  ║   All connections are monitored and recorded             ║
+  ║                                                           ║
+  ╚═══════════════════════════════════════════════════════════╝
+
+# Swap configuration
+common_configure_swap: false
+common_swap_size_mb: 2048
+common_swap_file_path: "/swapfile"
