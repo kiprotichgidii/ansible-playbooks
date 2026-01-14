@@ -1,0 +1,12 @@
+---
+- name: Reload Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded
+  when: phpipam_webserver == "nginx"
+
+- name: Reload Apache
+  ansible.builtin.service:
+    name: "{{ apache_service | default('apache2') }}"
+    state: reloaded
+  when: phpipam_webserver == "apache"
