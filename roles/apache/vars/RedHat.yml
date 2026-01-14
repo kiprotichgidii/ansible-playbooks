@@ -1,0 +1,8 @@
+---
+apache_package: httpd
+apache_service: httpd
+apache_conf_dir: /etc/httpd
+apache_vhosts_dir: /etc/httpd/conf.d
+apache_vhosts_enabled_dir: /etc/httpd/conf.d
+apache_log_dir: /var/log/httpd
+apache_user: apache

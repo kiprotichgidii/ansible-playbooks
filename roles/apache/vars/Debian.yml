@@ -1,0 +1,8 @@
+---
+apache_package: apache2
+apache_service: apache2
+apache_conf_dir: /etc/apache2
+apache_vhosts_dir: /etc/apache2/sites-available
+apache_vhosts_enabled_dir: /etc/apache2/sites-enabled
+apache_log_dir: /var/log/apache2
+apache_user: www-data
