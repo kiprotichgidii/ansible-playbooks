@@ -1,0 +1,8 @@
+# Chrony configuration for RedHat systems
+{% for server in common_ntp_servers %}
+server {{ server }} iburst
+{% endfor %}
+
+driftfile /var/lib/chrony/drift
+makestep 1.0 3
+rtcsync

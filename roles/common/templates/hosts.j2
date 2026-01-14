@@ -1,0 +1,6 @@
+127.0.0.1   localhost localhost.localdomain
+::1         localhost localhost.localdomain
+
+{% if common_hostname %}
+127.0.1.1   {{ common_hostname }}
+{% endif %}
