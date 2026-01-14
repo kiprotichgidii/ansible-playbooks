@@ -1,0 +1,16 @@
+<VirtualHost *:{{ item.listen_port | default(apache_listen_port) }}>
+    ServerAdmin webmaster@{{ item.servername }}
+    ServerName {{ item.servername }}
+    {% if item.serveralias is defined %}
+    ServerAlias {{ item.serveralias }}
+    {% endif %}
+
+    DocumentRoot {{ item.documentroot }}
+
+    ErrorLog {{ apache_log_dir }}/{{ item.servername }}-error.log
+    CustomLog {{ apache_log_dir }}/{{ item.servername }}-access.log combined
+
+    {% if item.extra_parameters is defined %}
+    {{ item.extra_parameters }}
+    {% endif %}
+</VirtualHost>
