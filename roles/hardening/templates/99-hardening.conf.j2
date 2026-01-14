@@ -1,0 +1,4 @@
+# Kernel sysctl configuration for security hardening
+{% for key, value in hardening_sysctl_settings.items() %}
+{{ key }} = {{ value }}
+{% endfor %}

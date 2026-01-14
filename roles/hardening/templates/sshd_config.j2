@@ -1,0 +1,28 @@
+# SSH Hardening Configuration
+Port {{ hardening_ssh_port }}
+Protocol 2
+
+# Authentication
+PermitRootLogin {{ hardening_ssh_permit_root_login }}
+PubkeyAuthentication {{ hardening_ssh_pubkey_authentication }}
+PasswordAuthentication {{ hardening_ssh_password_authentication }}
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+MaxAuthTries {{ hardening_ssh_max_auth_tries }}
+
+# Allowed Users
+{% if hardening_ssh_allowed_users | length > 0 %}
+AllowUsers {{ hardening_ssh_allowed_users | join(' ') }}
+{% endif %}
+
+# Session Settings
+X11Forwarding {{ hardening_ssh_x11_forwarding }}
+ClientAliveInterval {{ hardening_ssh_client_alive_interval }}
+ClientAliveCountMax {{ hardening_ssh_client_alive_count_max }}
+
+# Logging
+SyslogFacility AUTH
+LogLevel INFO
+
+# Subsystems
+Subsystem sftp /usr/lib/openssh/sftp-server
