@@ -28,10 +28,10 @@ This repository contains Ansible playbooks and roles for server configuration an
 ## Usage
 
 ### Run All configurations
-The `site.yml` playbook is the main entry point.
+The `main.yml` playbook is the main entry point.
 
 ```bash
-ansible-playbook -i inventories/staging/hosts.ini site.yml
+ansible-playbook -i inventories/staging/hosts.ini main.yml
 ```
 
 ### Run Specific Playbook
@@ -61,7 +61,7 @@ We use Ansible Vault to encrypt sensitive variables (passwords, keys).
 3.  **Running Playbooks**
     When running playbooks that use vaulted variables, add `--ask-vault-pass`:
     ```bash
-    ansible-playbook -i inventories/staging/hosts.ini site.yml --ask-vault-pass
+    ansible-playbook -i inventories/staging/hosts.ini main.yml --ask-vault-pass
     ```
     
     Or use a password file (add path to `vault_password_file` in `ansible.cfg`).
