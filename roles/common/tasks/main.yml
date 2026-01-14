@@ -1,0 +1,162 @@
+---
+# Update package cache
+- name: Update package cache (Debian/Ubuntu)
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Update package cache (RedHat)
+  ansible.builtin.yum:
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
+
+# Install essential packages
+- name: Install common packages
+  ansible.builtin.package:
+    name: "{{ common_packages }}"
+    state: present
+
+# Timezone configuration
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ common_timezone }}"
+
+# Hostname configuration
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: "{{ common_hostname }}"
+  when: common_set_hostname and common_hostname
+
+- name: Update /etc/hosts
+  ansible.builtin.template:
+    src: hosts.j2
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: '0644'
+  when: common_set_hostname and common_hostname
+
+# Locale configuration
+- name: Generate locale (Debian/Ubuntu)
+  community.general.locale_gen:
+    name: "{{ common_locale }}"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Set system locale
+  ansible.builtin.command:
+    cmd: localectl set-locale LANG={{ common_locale }}
+  changed_when: false
+
+# NTP/Time synchronization
+- name: Install systemd-timesyncd (Debian/Ubuntu)
+  ansible.builtin.package:
+    name: systemd-timesyncd
+    state: present
+  when: 
+    - common_enable_ntp
+    - ansible_os_family == "Debian"
+
+- name: Configure systemd-timesyncd
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/timesyncd.conf
+    regexp: '^#?NTP='
+    line: "NTP={{ common_ntp_servers | join(' ') }}"
+    state: present
+  when: 
+    - common_enable_ntp
+    - ansible_os_family == "Debian"
+  notify: Restart systemd-timesyncd
+
+- name: Enable systemd-timesyncd
+  ansible.builtin.service:
+    name: systemd-timesyncd
+    state: started
+    enabled: yes
+  when: 
+    - common_enable_ntp
+    - ansible_os_family == "Debian"
+
+- name: Install chrony (RedHat)
+  ansible.builtin.package:
+    name: chrony
+    state: present
+  when: 
+    - common_enable_ntp
+    - ansible_os_family == "RedHat"
+
+- name: Configure chrony
+  ansible.builtin.template:
+    src: chrony.conf.j2
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: '0644'
+  when: 
+    - common_enable_ntp
+    - ansible_os_family == "RedHat"
+  notify: Restart chronyd
+
+- name: Enable chronyd
+  ansible.builtin.service:
+    name: chronyd
+    state: started
+    enabled: yes
+  when: 
+    - common_enable_ntp
+    - ansible_os_family == "RedHat"
+
+# MOTD configuration
+- name: Configure MOTD
+  ansible.builtin.template:
+    src: motd.j2
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: '0644'
+  when: common_enable_motd
+
+# Swap configuration
+- name: Check if swap file exists
+  ansible.builtin.stat:
+    path: "{{ common_swap_file_path }}"
+  register: swap_file_check
+  when: common_configure_swap
+
+- name: Create swap file
+  ansible.builtin.command:
+    cmd: "dd if=/dev/zero of={{ common_swap_file_path }} bs=1M count={{ common_swap_size_mb }}"
+    creates: "{{ common_swap_file_path }}"
+  when: 
+    - common_configure_swap
+    - not swap_file_check.stat.exists
+
+- name: Set swap file permissions
+  ansible.builtin.file:
+    path: "{{ common_swap_file_path }}"
+    owner: root
+    group: root
+    mode: '0600'
+  when: common_configure_swap
+
+- name: Format swap file
+  ansible.builtin.command:
+    cmd: "mkswap {{ common_swap_file_path }}"
+  when: 
+    - common_configure_swap
+    - not swap_file_check.stat.exists
+
+- name: Enable swap file
+  ansible.builtin.command:
+    cmd: "swapon {{ common_swap_file_path }}"
+  when: 
+    - common_configure_swap
+    - not swap_file_check.stat.exists
+
+- name: Add swap to fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    line: "{{ common_swap_file_path }} none swap sw 0 0"
+    state: present
+  when: common_configure_swap
