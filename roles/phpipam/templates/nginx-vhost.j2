@@ -1,0 +1,22 @@
+server {
+    listen {{ phpipam_listen_port }};
+    server_name {{ phpipam_server_name }};
+    root {{ phpipam_install_dir }};
+    index index.php;
+
+    access_log /var/log/nginx/phpipam_access.log;
+    error_log /var/log/nginx/phpipam_error.log;
+
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php{{ php_version | default('8.2') }}-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}

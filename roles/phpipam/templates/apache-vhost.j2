@@ -1,0 +1,13 @@
+<VirtualHost *:{{ phpipam_listen_port }}>
+    ServerName {{ phpipam_server_name }}
+    DocumentRoot {{ phpipam_install_dir }}
+
+    <Directory {{ phpipam_install_dir }}>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/phpipam_error.log
+    CustomLog ${APACHE_LOG_DIR}/phpipam_access.log combined
+</VirtualHost>
