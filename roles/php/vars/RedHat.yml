@@ -1,0 +1,6 @@
+---
+# Assuming Remi or AppStream
+php_package_prefix: "php"
+php_fpm_service: "php-fpm"
+php_fpm_conf_dir: "/etc/php-fpm.d"
+php_conf_dir: "/etc"

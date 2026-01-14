@@ -1,0 +1,5 @@
+---
+php_package_prefix: "php{{ php_version }}"
+php_fpm_service: "php{{ php_version }}-fpm"
+php_fpm_conf_dir: "/etc/php/{{ php_version }}/fpm/pool.d"
+php_conf_dir: "/etc/php/{{ php_version }}/cli"
