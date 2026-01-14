@@ -3,3 +3,13 @@ mariadb_package: mariadb-server
 mariadb_service: mariadb
 mariadb_bind_address: "127.0.0.1"
 mariadb_port: 3306
+mariadb_root_password: "change_me_securely"
+mariadb_databases: []
+#  - name: example_db
+#    encoding: utf8
+#    collation: utf8_general_ci
+mariadb_users: []
+#  - name: example_user
+#    password: user_password
+#    priv: 'example_db.*:ALL'
+#    host: '%'
