@@ -1,0 +1,15 @@
+---
+php_version: "8.2" # Relevant for Debian/Ubuntu PPA
+php_enable_fpm: true
+php_modules:
+  - cli
+  - curl
+  - mysql
+  - xml
+  - zip
+  - gd
+  - mbstring
+
+php_fpm_user: www-data
+php_fpm_group: www-data
+php_fpm_listen: "/run/php/php{{ php_version }}-fpm.sock"
