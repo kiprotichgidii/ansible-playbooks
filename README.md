@@ -7,7 +7,7 @@ This repository contains Ansible playbooks and roles for server configuration an
 - `inventories/`: Inventory files per environment (local, staging, production).
 - `playbooks/`: Individual playbooks (e.g., user setup).
 - `roles/`: Reusable Ansible roles.
-- `site.yml`: Main entry point to run all configurations.
+- `main.yml`: Main entry point to run all configurations.
 - `ansible.cfg`: Ansible configuration parameters.
 
 ## Setup
