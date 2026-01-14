@@ -1,0 +1,20 @@
+# PostgreSQL configuration file
+data_directory = '{{ postgresql_data_dir }}'
+hba_file = '{{ postgresql_conf_dir }}/pg_hba.conf'
+ident_file = '{{ postgresql_conf_dir }}/pg_ident.conf'
+external_pid_file = '/var/run/postgresql/{{ postgresql_version }}-main.pid'
+
+listen_addresses = '{{ postgresql_listen_addresses }}'
+port = {{ postgresql_port }}
+max_connections = 100
+shared_buffers = 128MB
+dynamic_shared_memory_type = posix
+log_timezone = 'UTC'
+datestyle = 'iso, mdy'
+timezone = 'UTC'
+lc_messages = 'C.UTF-8'
+lc_monetary = 'C.UTF-8'
+lc_numeric = 'C.UTF-8'
+lc_time = 'C.UTF-8'
+default_text_search_config = 'pg_catalog.english'
+include_dir = 'conf.d'
