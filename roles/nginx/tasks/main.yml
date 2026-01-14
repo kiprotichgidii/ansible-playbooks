@@ -1,0 +1,44 @@
+---
+- name: Install Nginx
+  ansible.builtin.package:
+    name: "{{ nginx_package }}"
+    state: present
+
+- name: Apply Nginx configuration
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    mode: '0644'
+  notify: Reload Nginx
+
+- name: Create sites-available directory
+  ansible.builtin.file:
+    path: /etc/nginx/sites-available
+    state: directory
+
+- name: Create sites-enabled directory
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled
+    state: directory
+
+- name: Configure Virtual Hosts
+  ansible.builtin.template:
+    src: vhost.j2
+    dest: "/etc/nginx/sites-available/{{ item.name }}.conf"
+    mode: '0644'
+  loop: "{{ nginx_vhosts }}"
+  notify: Reload Nginx
+
+- name: Enable Virtual Hosts
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ item.name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ item.name }}.conf"
+    state: link
+  loop: "{{ nginx_vhosts }}"
+  notify: Reload Nginx
+
+- name: Ensure Nginx service is running
+  ansible.builtin.service:
+    name: "{{ nginx_service }}"
+    state: started
+    enabled: yes
