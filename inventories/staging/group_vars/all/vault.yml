@@ -1,0 +1,8 @@
+# SENSITIVE DATA - ENCRYPT WITH ANSIBLE VAULT
+# Usage: ansible-vault encrypt inventories/staging/group_vars/all/vault.yml
+
+mariadb_root_password: "supersecretpassword"
+mariadb_users:
+  - name: app_user
+    password: "app_password"
+    priv: "app_db.*:ALL"

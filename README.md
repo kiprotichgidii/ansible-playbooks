@@ -41,9 +41,27 @@ You can run individual playbooks if needed.
 ansible-playbook -i inventories/staging/hosts.ini playbooks/user-setup.yml -e "user_name=myuser"
 ```
 
-## Security Credentials
+## Security Credentials (Ansible Vault)
 
-Secrets should be encrypted using **Ansible Vault**.
-```bash
-ansible-vault encrypt inventories/production/group_vars/all/vault.yml
-```
+We use Ansible Vault to encrypt sensitive variables (passwords, keys).
+
+1.  **Create/Edit Encrypted File**
+    To create or edit the secrets file:
+    ```bash
+    ansible-vault edit inventories/staging/group_vars/all/vault.yml
+    ```
+    *This will prompt you for a password and open your $EDITOR.*
+
+2.  **Encrypt Existing File**
+    If you have a plain file you want to encrypt:
+    ```bash
+    ansible-vault encrypt inventories/staging/group_vars/all/vault.yml
+    ```
+
+3.  **Running Playbooks**
+    When running playbooks that use vaulted variables, add `--ask-vault-pass`:
+    ```bash
+    ansible-playbook -i inventories/staging/hosts.ini site.yml --ask-vault-pass
+    ```
+    
+    Or use a password file (add path to `vault_password_file` in `ansible.cfg`).
