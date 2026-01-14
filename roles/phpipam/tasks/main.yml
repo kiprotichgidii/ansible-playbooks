@@ -1,0 +1,84 @@
+---
+- name: Install required packages
+  ansible.builtin.package:
+    name:
+      - git
+      - unzip
+    state: present
+
+- name: Create PHPIPAM installation directory
+  ansible.builtin.file:
+    path: "{{ phpipam_install_dir }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Download PHPIPAM
+  ansible.builtin.get_url:
+    url: "{{ phpipam_download_url }}"
+    dest: "/tmp/phpipam-{{ phpipam_version }}.tar.gz"
+    mode: '0644'
+
+- name: Extract PHPIPAM
+  ansible.builtin.unarchive:
+    src: "/tmp/phpipam-{{ phpipam_version }}.tar.gz"
+    dest: "/tmp/"
+    remote_src: yes
+    creates: "/tmp/phpipam-{{ phpipam_version }}"
+
+- name: Copy PHPIPAM files to installation directory
+  ansible.builtin.copy:
+    src: "/tmp/phpipam-{{ phpipam_version }}/"
+    dest: "{{ phpipam_install_dir }}/"
+    remote_src: yes
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Configure PHPIPAM
+  ansible.builtin.template:
+    src: config.php.j2
+    dest: "{{ phpipam_install_dir }}/config.php"
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: Configure Nginx virtual host
+  ansible.builtin.template:
+    src: nginx-vhost.j2
+    dest: "/etc/nginx/sites-available/phpipam.conf"
+    mode: '0644'
+  when: phpipam_webserver == "nginx"
+  notify: Reload Nginx
+
+- name: Enable Nginx virtual host
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/phpipam.conf"
+    dest: "/etc/nginx/sites-enabled/phpipam.conf"
+    state: link
+  when: phpipam_webserver == "nginx"
+  notify: Reload Nginx
+
+- name: Configure Apache virtual host
+  ansible.builtin.template:
+    src: apache-vhost.j2
+    dest: "/etc/apache2/sites-available/phpipam.conf"
+    mode: '0644'
+  when: phpipam_webserver == "apache"
+  notify: Reload Apache
+
+- name: Enable Apache virtual host
+  ansible.builtin.file:
+    src: "/etc/apache2/sites-available/phpipam.conf"
+    dest: "/etc/apache2/sites-enabled/phpipam.conf"
+    state: link
+  when: phpipam_webserver == "apache"
+  notify: Reload Apache
+
+- name: Set proper permissions
+  ansible.builtin.file:
+    path: "{{ phpipam_install_dir }}"
+    owner: www-data
+    group: www-data
+    recurse: yes
