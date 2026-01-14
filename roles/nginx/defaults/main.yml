@@ -1,0 +1,19 @@
+---
+nginx_package: nginx
+nginx_service: nginx
+nginx_user: www-data
+nginx_worker_connections: 1024
+nginx_worker_processes: auto
+nginx_keepalive_timeout: 65
+nginx_client_max_body_size: 64m
+
+nginx_vhosts: []
+#  - name: example.com
+#    listen: 80
+#    server_name: example.com www.example.com
+#    root: /var/www/example.com
+#    index: index.html index.htm
+#    extra_parameters: |
+#      location / {
+#        try_files $uri $uri/ =404;
+#      }
