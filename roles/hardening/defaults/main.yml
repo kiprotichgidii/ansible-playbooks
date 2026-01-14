@@ -1,0 +1,48 @@
+---
+# SSH Hardening
+hardening_ssh_port: 22
+hardening_ssh_permit_root_login: "no"
+hardening_ssh_password_authentication: "no"
+hardening_ssh_pubkey_authentication: "yes"
+hardening_ssh_x11_forwarding: "no"
+hardening_ssh_max_auth_tries: 3
+hardening_ssh_client_alive_interval: 300
+hardening_ssh_client_alive_count_max: 2
+hardening_ssh_allowed_users: []  # Empty = allow all
+
+# Firewall (UFW)
+hardening_enable_ufw: true
+hardening_ufw_default_incoming: "deny"
+hardening_ufw_default_outgoing: "allow"
+hardening_ufw_allowed_ports:
+  - "{{ hardening_ssh_port }}/tcp"
+
+# Kernel Parameters (sysctl)
+hardening_sysctl_settings:
+  # IP Forwarding
+  net.ipv4.ip_forward: 0
+  net.ipv6.conf.all.forwarding: 0
+  
+  # Syn flood protection
+  net.ipv4.tcp_syncookies: 1
+  net.ipv4.tcp_max_syn_backlog: 2048
+  
+  # Ignore ICMP redirects
+  net.ipv4.conf.all.accept_redirects: 0
+  net.ipv6.conf.all.accept_redirects: 0
+  
+  # Ignore source routed packets
+  net.ipv4.conf.all.accept_source_route: 0
+  net.ipv6.conf.all.accept_source_route: 0
+  
+  # Log martians
+  net.ipv4.conf.all.log_martians: 1
+
+# Automatic Updates
+hardening_enable_auto_updates: true
+hardening_auto_updates_email: ""
+
+# Fail2ban
+hardening_enable_fail2ban: true
+hardening_fail2ban_bantime: 3600
+hardening_fail2ban_maxretry: 5
