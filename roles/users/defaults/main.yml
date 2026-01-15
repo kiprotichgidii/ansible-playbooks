@@ -1,0 +1,10 @@
+users_manage: true
+
+users_default_shell: /bin/bash
+users_default_groups:
+  - users
+
+users_sudo_group: wheel
+
+users_create: []
+users_remove: []
