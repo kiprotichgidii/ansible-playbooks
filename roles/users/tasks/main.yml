@@ -30,20 +30,24 @@
 
 - name: Install SSH authorized keys for users
   ansible.builtin.authorized_key:
-    user: "{{ outer_item.name }}"
-    key: "{{ inner_item }}"
+    user: "{{ item.user }}"
+    key: "{{ item.key }}"
     state: present
-  loop: "{{ ssh_public_keys[outer_item.name] | default([]) }}"
+  loop: >-
+    {% set result = [] %}
+    {% for user in users_create %}
+    {%   if user.name in ssh_public_keys %}
+    {%     for key in ssh_public_keys[user.name] %}
+    {%       set _ = result.append({'user': user.name, 'key': key}) %}
+    {%     endfor %}
+    {%   endif %}
+    {% endfor %}
+    {{ result }}
   loop_control:
-    loop_var: inner_item
-    label: "{{ outer_item.name }}"
-  vars:
-    outer_item: "{{ item }}"
-  with_items: "{{ users_create }}"
+    label: "{{ item.user }}"
   when:
     - users_manage
     - ssh_public_keys is defined
-    - outer_item.name in ssh_public_keys
 
 - name: Setup passwordless sudo for sudo group
   ansible.builtin.copy:
@@ -52,7 +56,7 @@
     owner: root
     group: root
     mode: "0440"
-    validate: '/usr/sbin/visudo -cf %s'
+    validate: visudo -cf %s
   when: users_manage
 
 - name: Remove unwanted user accounts
