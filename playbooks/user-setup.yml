@@ -1,5 +1,5 @@
-- name: Create Users
-  hosts: local
+- name: User Setup
+  hosts: db-servers
   become: true
   roles:
     - role: users
