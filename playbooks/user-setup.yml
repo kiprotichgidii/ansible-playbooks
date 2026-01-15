@@ -1,6 +1,12 @@
 - name: Create provisioning user and setup SSH access
-  hosts: all
+  hosts: local
   become: true
-
   roles:
-    - create-users
+    - role: users
+      users_create:
+        - name: admin
+          uid: 1050
+          groups: ["wheel"]
+
+        - name: kloudke
+          groups: ["wheel"]
