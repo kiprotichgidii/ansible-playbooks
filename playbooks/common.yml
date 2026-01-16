@@ -1,0 +1,6 @@
+---
+- name: Common System Configuration
+  hosts: all
+  become: true
+  roles:
+    - common
