@@ -1,0 +1,17 @@
+---
+exclude_paths:
+  - .github/
+  - inventories/
+
+# Skip certain rules if necessary
+skip_list:
+  - 'yaml'  # We might have specific YAML formatting preferences
+  - 'experimental'
+
+# Provide additional role paths if needed
+role_paths:
+  - ./roles
+
+# Rule-specific configuration
+# var-naming:
+#   pattern: ^[a-z_][a-z0-8_]*$
