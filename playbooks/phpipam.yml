@@ -1,0 +1,6 @@
+---
+- name: Install and Configure PHPIPAM
+  hosts: web-servers
+  become: true
+  roles:
+    - phpipam
