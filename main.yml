@@ -1,2 +1,29 @@
 ---
-- import_playbook: playbooks/user-setup.yml
+# Main entry point for the repository
+# This playbook imports all the individual playbooks in a logical order.
+
+- name: Initial Setup
+  import_playbook: playbooks/user-setup.yml
+
+- name: Infrastructure Configuration
+  import_playbook: playbooks/common.yml
+
+- name: Security Hardening
+  import_playbook: playbooks/hardening.yml
+
+- name: Database Servers
+  import_playbook: playbooks/mariadb.yml
+  # Alternately, import mysql.yml or postgresql.yml as needed
+  # import_playbook: playbooks/mysql.yml
+  # import_playbook: playbooks/postgresql.yml
+
+- name: Web Servers
+  import_playbook: playbooks/nginx.yml
+  # Alternately, import apache.yml if using Apache
+  # import_playbook: playbooks/apache.yml
+
+- name: Runtime Environment
+  import_playbook: playbooks/php.yml
+
+- name: Application Deployment
+  import_playbook: playbooks/phpipam.yml
