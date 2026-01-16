@@ -1,0 +1,6 @@
+---
+- name: Install and Configure PHP
+  hosts: web-servers
+  become: true
+  roles:
+    - php
