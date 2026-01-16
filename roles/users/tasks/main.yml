@@ -30,24 +30,13 @@
 
 - name: Install SSH authorized keys for users
   ansible.builtin.authorized_key:
-    user: "{{ item.user }}"
-    key: "{{ item.key }}"
+    user: "{{ item.0.name }}"
+    key: "{{ item.1 }}"
     state: present
-  loop: >-
-    {% set result = [] %}
-    {% for user in users_create %}
-    {%   if user.name in ssh_public_keys %}
-    {%     for key in ssh_public_keys[user.name] %}
-    {%       set _ = result.append({'user': user.name, 'key': key}) %}
-    {%     endfor %}
-    {%   endif %}
-    {% endfor %}
-    {{ result }}
+  loop: "{{ users_create | subelements('ssh_keys', skip_missing=true) }}"
   loop_control:
-    label: "{{ item.user }}"
-  when:
-    - users_manage
-    - ssh_public_keys is defined
+    label: "{{ item.0.name }}"
+  when: users_manage
 
 - name: Setup passwordless sudo for sudo group
   ansible.builtin.copy:
