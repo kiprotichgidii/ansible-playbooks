@@ -33,15 +33,7 @@ Each user in `users_create` can have:
 
 ## SSH Keys
 
-Define SSH keys in `vars/main.yml` or group_vars:
-```yaml
-ssh_public_keys:
-  admin:
-    - "ssh-rsa AAAA..."
-    - "ssh-ed25519 AAAA..."
-  deploy:
-    - "ssh-rsa AAAA..."
-```
+SSH keys are defined as a list within each user object using the `ssh_keys` attribute.
 
 ## Example Playbook
 
@@ -55,9 +47,14 @@ ssh_public_keys:
       - name: admin
         uid: 1050
         groups: ["wheel", "docker"]
+        ssh_keys:
+          - "ssh-rsa AAAA..."
+          - "ssh-ed25519 AAAA..."
       - name: deploy
         groups: ["wheel"]
         shell: /bin/zsh
+        ssh_keys:
+          - "ssh-rsa AAAA..."
     users_remove:
       - name: olduser
         remove_home: true
@@ -67,6 +64,6 @@ ssh_public_keys:
 
 ## Notes
 
-*   SSH keys are looked up from the `ssh_public_keys` dictionary by username
+*   SSH keys are defined directly within each user object in `users_create`
 *   The sudo group receives passwordless sudo access via `/etc/sudoers.d/`
 *   User removal does not delete home directories by default (set `remove_home: true`)
