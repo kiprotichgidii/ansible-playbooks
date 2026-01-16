@@ -1,0 +1,6 @@
+---
+- name: Install and Configure MariaDB
+  hosts: db-servers
+  become: true
+  roles:
+    - mariadb
