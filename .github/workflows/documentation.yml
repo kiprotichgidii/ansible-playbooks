@@ -1,0 +1,22 @@
+name: Ansible Docs Check
+
+on:
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  check-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for README.md in roles
+        run: |
+          for role in $(ls roles/); do
+            if [ ! -f "roles/$role/README.md" ]; then
+              echo "Error: Role '$role' is missing a README.md file."
+              exit 1
+            fi
+          done
+          echo "All roles have a README.md file."
