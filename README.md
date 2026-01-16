@@ -41,6 +41,13 @@ You can run individual playbooks if needed.
 ansible-playbook -i inventories/staging/hosts.ini playbooks/user-setup.yml -e "user_name=myuser"
 ```
 
+## Quality Assurance
+
+This repository includes automated workflows for code quality and documentation:
+
+*   **Ansible Lint**: Runs `ansible-lint` on every push to ensure best practices. Configuration in `.ansible-lint`.
+*   **Documentation Check**: Verifies that every role has a `README.md` file.
+
 ## Security Credentials (Ansible Vault)
 
 We use Ansible Vault to encrypt sensitive variables (passwords, keys).
