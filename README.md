@@ -12,16 +12,18 @@ This repository contains Ansible playbooks and roles for server configuration an
 
 ## Setup
 
-1.  **Create Virtual Environment**
+1.  **Run Setup Script**
+    The `scripts/setup.sh` script automates the environment setup (venv, dependencies).
+    ```bash
+    ./scripts/setup.sh
+    source venv/bin/activate
+    ```
+
+    *Alternatively, manual setup:*
     ```bash
     python3 -m venv venv
     source venv/bin/activate
-    pip install ansible
-    ```
-
-2.  **Install Requirements**
-    (If you add external roles in requirements.yml)
-    ```bash
+    pip install ansible ansible-lint
     # ansible-galaxy install -r requirements.yml
     ```
 
