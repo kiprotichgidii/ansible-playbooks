@@ -1,0 +1,41 @@
+---
+- name: Load OS-specific variables
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install Java
+  ansible.builtin.package:
+    name: "{{ java_package }}"
+    state: present
+
+- name: Include OS-specific Jenkins repo setup
+  ansible.builtin.include_tasks: "setup_repo_{{ ansible_os_family }}.yml"
+
+- name: Install Jenkins
+  ansible.builtin.package:
+    name: jenkins
+    state: present
+
+- name: Create systemd override directory for Jenkins
+  ansible.builtin.file:
+    path: /etc/systemd/system/jenkins.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Configure Jenkins environment variables
+  ansible.builtin.template:
+    src: override.conf.j2
+    dest: /etc/systemd/system/jenkins.service.d/override.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload systemd
+    - Restart Jenkins
+
+- name: Ensure Jenkins service is started and enabled
+  ansible.builtin.service:
+    name: jenkins
+    state: started
+    enabled: yes
