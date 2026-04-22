@@ -3,4 +3,4 @@
   hosts: jenkins-servers
   become: true
   roles:
-    - jenkins
+    - role: jenkins

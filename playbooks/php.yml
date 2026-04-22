@@ -3,4 +3,4 @@
   hosts: web-servers
   become: true
   roles:
-    - php
+    - role: php

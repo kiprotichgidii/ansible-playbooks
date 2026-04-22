@@ -3,4 +3,4 @@
   hosts: db-servers
   become: true
   roles:
-    - mysql
+    - role: mysql
